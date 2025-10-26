@@ -1,0 +1,27 @@
+title: EverNest
+subtitle: 一个温柔的文字栖息地
+theme_color: "#fdf6f0"
+author: Ever
+
+showDate: true # 是否展示日期 | If true,show the date
+
+menu:
+  - name: 首页
+    icon: fas fa-home
+    link: /
+  - name: 归档
+    icon: fas fa-box-archive
+    link: /archives/
+  - name: 关于我
+    icon: fas fa-user
+    link: /about/
+  - name: 夜间模式
+    icon: fas fa-moon
+    type: mode-toggle
+
+bg-color: "#fdf6f0"
+default_mode: light  # light 或 dark | light or dark
+
+backgroundImgDesktop: /images/bg-16.jpeg   # 16:9 横图
+backgroundImgMobile: /images/bg-9.jpg     # 9:16 竖图
+avatar: /images/avatar.jpg

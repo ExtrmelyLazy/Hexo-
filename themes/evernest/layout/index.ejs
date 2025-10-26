@@ -1,0 +1,17 @@
+<div class='underPostCard'>
+<% site.posts.each(function(post){ %>
+    <article class="post-card">
+      <header>
+        <h2 class="post-title">
+          <a href="<%= url_for(post.path) %>"><%= post.title %></a>
+        </h2>
+        <% if (theme.showDate) { %>
+          <p class="date"><%= theme.author %> 发表于 <%= date(post.date, 'YYYY-MM-DD') %></p>
+        <% } %>
+      </header>
+      <section class="excerpt">
+        <%- post.excerpt %>
+      </section>
+    </article>
+<% }) %>
+</div>

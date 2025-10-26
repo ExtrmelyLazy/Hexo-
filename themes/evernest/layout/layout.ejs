@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= page.title ? page.title + ' - ' + config.title : config.title %></title>
+
+  <!-- 样式文件 -->
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/type.css">
+  <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+Mono+TC&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- 配置驱动的主题色和背景图 -->
+  <style>
+    :root {
+      --bg-color: <%= theme.bg_color || '#fdf6f0' %>;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      background-image: url('<%= theme.backgroundImgDesktop || "" %>');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-position: center center;
+    }
+
+    @media screen and (max-width: 768px) {
+      body {
+        background-image: url('<%= theme.backgroundImgMobile || theme.backgroundImgDesktop || "" %>');
+      }
+    }
+
+    body.dark-mode {
+      filter: brightness(0.9);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 顶部标题和副标题 -->
+  <%- partial('partial/header') %>
+
+  <!-- 折叠导航栏（含夜间模式按钮） -->
+  <%- partial('partial/nav') %>
+
+  <!-- 主体内容 -->
+  <main>
+    <%- body %>
+  </main>
+
+  <!-- 页脚 -->
+  <%- partial('partial/footer') %>
+
+  <!-- 所有脚本统一在 DOMContentLoaded 后执行 -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 折叠导航
+      const navToggle = document.querySelector('.nav-toggle');
+      if (navToggle) {
+        navToggle.addEventListener('click', () => {
+          const nav = document.getElementById('navList');
+          if (nav) {
+            nav.classList.toggle('show');
+          }
+        });
+      }
+
+      // 夜间模式切换
+      const toggleBtn = document.getElementById('modeToggle');
+      const body = document.body;
+
+      if (toggleBtn) {
+        console.log('夜间模式按钮已找到');
+        
+        // 从本地存储获取模式，如果没有则使用默认模式
+        const savedMode = localStorage.getItem('theme-mode');
+        const defaultMode = "<%= theme.default_mode || 'light' %>";
+        const currentMode = savedMode || defaultMode;
+
+        // 初始化模式
+        if (currentMode === 'dark') {
+          body.classList.add('dark-mode');
+          updateModeToggleButton(true);
+        } else {
+          body.classList.remove('dark-mode');
+          updateModeToggleButton(false);
+        }
+
+        // 切换按钮文本的函数
+        function updateModeToggleButton(isDark) {
+          if (isDark) {
+            toggleBtn.innerHTML = '<i class="fas fa-sun"></i> 日间模式';
+          } else {
+            toggleBtn.innerHTML = '<i class="fas fa-moon"></i> 夜间模式';
+          }
+        }
+
+        // 点击事件
+        toggleBtn.addEventListener('click', () => {
+          console.log('切换夜间模式');
+          const isDark = body.classList.toggle('dark-mode');
+          
+          // 保存到本地存储
+          localStorage.setItem('theme-mode', isDark ? 'dark' : 'light');
+          
+          // 更新按钮文本
+          updateModeToggleButton(isDark);
+          
+          console.log('当前模式:', isDark ? 'dark' : 'light');
+        });
+
+      } else {
+        console.error('未找到夜间模式按钮，请检查 nav.ejs 中的按钮ID');
+      }
+
+      // 打字机效果
+      const textArray = ["欢迎回家！","欢迎来到EverNest"]
+      const typedTextElement = document.getElementById('typed-text');
+
+      if (typedTextElement && textArray.length > 0 && textArray.some(text => text && text.trim() !== '')) {
+        const typingSpeed = 120;
+        const delayBetweenTexts = 2000;
+        let textIndex = 0;
+        let charIndex = 0;
+
+        function typeText() {
+          const currentText = textArray[textIndex];
+          
+          // 跳过空文本
+          if (!currentText || currentText.trim() === '') {
+            textIndex = (textIndex + 1) % textArray.length;
+            setTimeout(typeText, typingSpeed);
+            return;
+          }
+
+          if (charIndex < currentText.length) {
+            typedTextElement.textContent += currentText.charAt(charIndex);
+            charIndex++;
+            setTimeout(typeText, typingSpeed);
+          } else {
+            setTimeout(deleteText, delayBetweenTexts);
+          }
+        }
+
+        function deleteText() {
+          const currentText = textArray[textIndex];
+          if (charIndex > 0) {
+            typedTextElement.textContent = currentText.substring(0, charIndex - 1);
+            charIndex--;
+            setTimeout(deleteText, typingSpeed / 2);
+          } else {
+            textIndex = (textIndex + 1) % textArray.length;
+            setTimeout(typeText, typingSpeed);
+          }
+        }
+
+        typeText();
+      }
+    });
+  </script>
+</body>
+</html>
